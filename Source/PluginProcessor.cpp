@@ -101,85 +101,7 @@ void First_EQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     spec.sampleRate = sampleRate;
     leftChain.prepare(spec);
     rightChain.prepare(spec);
-    
-    auto chainSettings = getChainSettings(apvts);
-    
-    updatePeakFilter(chainSettings);
-    
-    auto cutCoefficient  = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq, sampleRate, (chainSettings.lowCutSlope + 1)*2);
-    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
-    updateCutFilter(leftLowCut, cutCoefficient, chainSettings.lowCutSlope);
-//    leftLowCut.setBypassed<0>(true);
-//    leftLowCut.setBypassed<1>(true);
-//    leftLowCut.setBypassed<2>(true);
-//    leftLowCut.setBypassed<3>(true);
-//    switch (chainSettings.lowCutSlope) {
-//        case Slope_12:
-//            *leftLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            leftLowCut.setBypassed<0>(false);
-//            break;
-//        case Slope_24:
-//            *leftLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            leftLowCut.setBypassed<0>(false);
-//            *leftLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            leftLowCut.setBypassed<1>(false);
-//            break;
-//        case Slope_36:
-//            *leftLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            leftLowCut.setBypassed<0>(false);
-//            *leftLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            leftLowCut.setBypassed<1>(false);
-//            *leftLowCut.get<2>().coefficients = *cutCoefficient[2];
-//            leftLowCut.setBypassed<2>(false);
-//            break;
-//        case Slope_48:
-//            *leftLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            leftLowCut.setBypassed<0>(false);
-//            *leftLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            leftLowCut.setBypassed<1>(false);
-//            *leftLowCut.get<2>().coefficients = *cutCoefficient[2];
-//            leftLowCut.setBypassed<2>(false);
-//            *leftLowCut.get<3>().coefficients = *cutCoefficient[3];
-//            leftLowCut.setBypassed<3>(false);
-//            break;
-//    }
-    
-    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
-    updateCutFilter(rightLowCut, cutCoefficient, chainSettings.lowCutSlope);
-//    rightLowCut.setBypassed<0>(true);
-//    rightLowCut.setBypassed<1>(true);
-//    rightLowCut.setBypassed<2>(true);
-//    rightLowCut.setBypassed<3>(true);
-//    switch (chainSettings.lowCutSlope) {
-//        case Slope_12:
-//            *rightLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            rightLowCut.setBypassed<0>(false);
-//            break;
-//        case Slope_24:
-//            *rightLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            rightLowCut.setBypassed<0>(false);
-//            *rightLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            rightLowCut.setBypassed<1>(false);
-//            break;
-//        case Slope_36:
-//            *rightLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            rightLowCut.setBypassed<0>(false);
-//            *rightLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            rightLowCut.setBypassed<1>(false);
-//            *rightLowCut.get<2>().coefficients = *cutCoefficient[2];
-//            rightLowCut.setBypassed<2>(false);
-//            break;
-//        case Slope_48:
-//            *rightLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            rightLowCut.setBypassed<0>(false);
-//            *rightLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            rightLowCut.setBypassed<1>(false);
-//            *rightLowCut.get<2>().coefficients = *cutCoefficient[2];
-//            rightLowCut.setBypassed<2>(false);
-//            *rightLowCut.get<3>().coefficients = *cutCoefficient[3];
-//            rightLowCut.setBypassed<3>(false);
-//            break;
-//    }
+    updateFilter();
 }
 
 void First_EQAudioProcessor::releaseResources()
@@ -229,82 +151,7 @@ void First_EQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    auto chainSettings = getChainSettings(apvts);
-    updatePeakFilter(chainSettings);
-    auto cutCoefficient  = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq, getSampleRate(), (chainSettings.lowCutSlope + 1)*2);
-    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
-    updateCutFilter(leftLowCut, cutCoefficient, chainSettings.lowCutSlope);
-//    leftLowCut.setBypassed<0>(true);
-//    leftLowCut.setBypassed<1>(true);
-//    leftLowCut.setBypassed<2>(true);
-//    leftLowCut.setBypassed<3>(true);
-//    switch (chainSettings.lowCutSlope) {
-//        case Slope_12:
-//            *leftLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            leftLowCut.setBypassed<0>(false);
-//            break;
-//        case Slope_24:
-//            *leftLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            leftLowCut.setBypassed<0>(false);
-//            *leftLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            leftLowCut.setBypassed<1>(false);
-//            break;
-//        case Slope_36:
-//            *leftLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            leftLowCut.setBypassed<0>(false);
-//            *leftLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            leftLowCut.setBypassed<1>(false);
-//            *leftLowCut.get<2>().coefficients = *cutCoefficient[2];
-//            leftLowCut.setBypassed<2>(false);
-//            break;
-//        case Slope_48:
-//            *leftLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            leftLowCut.setBypassed<0>(false);
-//            *leftLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            leftLowCut.setBypassed<1>(false);
-//            *leftLowCut.get<2>().coefficients = *cutCoefficient[2];
-//            leftLowCut.setBypassed<2>(false);
-//            *leftLowCut.get<3>().coefficients = *cutCoefficient[3];
-//            leftLowCut.setBypassed<3>(false);
-//            break;
-//    }
-//
-    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
-    updateCutFilter(rightLowCut, cutCoefficient, chainSettings.lowCutSlope);
-//    rightLowCut.setBypassed<0>(true);
-//    rightLowCut.setBypassed<1>(true);
-//    rightLowCut.setBypassed<2>(true);
-//    rightLowCut.setBypassed<3>(true);
-//    switch (chainSettings.lowCutSlope) {
-//        case Slope_12:
-//            *rightLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            rightLowCut.setBypassed<0>(false);
-//            break;
-//        case Slope_24:
-//            *rightLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            rightLowCut.setBypassed<0>(false);
-//            *rightLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            rightLowCut.setBypassed<1>(false);
-//            break;
-//        case Slope_36:
-//            *rightLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            rightLowCut.setBypassed<0>(false);
-//            *rightLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            rightLowCut.setBypassed<1>(false);
-//            *rightLowCut.get<2>().coefficients = *cutCoefficient[2];
-//            rightLowCut.setBypassed<2>(false);
-//            break;
-//        case Slope_48:
-//            *rightLowCut.get<0>().coefficients = *cutCoefficient[0];
-//            rightLowCut.setBypassed<0>(false);
-//            *rightLowCut.get<1>().coefficients = *cutCoefficient[1];
-//            rightLowCut.setBypassed<1>(false);
-//            *rightLowCut.get<2>().coefficients = *cutCoefficient[2];
-//            rightLowCut.setBypassed<2>(false);
-//            *rightLowCut.get<3>().coefficients = *cutCoefficient[3];
-//            rightLowCut.setBypassed<3>(false);
-//            break;
-//    }
+    updateFilter();
     
     juce::dsp::AudioBlock<float> block(buffer);
     auto leftBlock = block.getSingleChannelBlock(0);
@@ -381,6 +228,30 @@ void First_EQAudioProcessor::updatePeakFilter(const ChainSettings& chainSettings
 void First_EQAudioProcessor::updateCoefficients(Coefficients& old, const Coefficients& replacements)
 {
     *old = *replacements;
+}
+
+void First_EQAudioProcessor::updateHighCutFilter(const ChainSettings &chainSettings) {
+    auto highCutCoefficient = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(chainSettings.highCutFreq, getSampleRate(), (chainSettings.lowCutSlope + 1)*2);
+    auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
+    updateCutFilter(leftHighCut, highCutCoefficient, chainSettings.lowCutSlope);
+    auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
+    updateCutFilter(rightHighCut, highCutCoefficient, chainSettings.lowCutSlope);
+}
+
+void First_EQAudioProcessor::updateLowCutFilter(const ChainSettings &chainSettings) {
+    auto lowCutCoefficient  = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq, getSampleRate(), (chainSettings.lowCutSlope + 1)*2);
+    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
+    updateCutFilter(leftLowCut, lowCutCoefficient, chainSettings.lowCutSlope);
+
+    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
+    updateCutFilter(rightLowCut, lowCutCoefficient, chainSettings.lowCutSlope);
+}
+
+void First_EQAudioProcessor::updateFilter() {
+    auto chainSettings = getChainSettings(apvts);
+    updateLowCutFilter(chainSettings);
+    updateHighCutFilter(chainSettings);
+    updatePeakFilter(chainSettings);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout First_EQAudioProcessor::createParameterLayout()
