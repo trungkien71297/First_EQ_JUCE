@@ -42,5 +42,7 @@ private:
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
     Attachment peakFreqAttachment, peakGainAttachment, peakQualityAttachment, lowCutFreqAttachment, highCutFreqAttachment, lowCutSlopeAttachment, highCutSlopeAttachment;
+    MonoChain monoChain;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (First_EQAudioProcessorEditor)
 };
