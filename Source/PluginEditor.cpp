@@ -119,6 +119,19 @@ void First_EQAudioProcessorEditor::resized()
     peakQualitySlider.setBounds(bounds);
 }
 
+void First_EQAudioProcessorEditor::parameterValueChanged(<#int parameterIndex#>, <#float newValue#>)
+{
+    parametersChanged.set(true);
+}
+
+void First_EQAudioProcessorEditor::timerCallback()
+{
+   if (parametersChanged.compareAndSetBool(false, true))
+   {
+       
+   }
+}
+
 std::vector<juce::Component*> First_EQAudioProcessorEditor::getComps()
 {
     return

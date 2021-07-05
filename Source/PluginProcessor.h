@@ -41,6 +41,10 @@ enum ChainPositions
     HighCut
 };
 
+using Coefficients = Filter::CoefficientsPtr;
+static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
+Coefficients makePeakFilter(const ChainSettings&, double sampleRate);
+
 class First_EQAudioProcessor  : public juce::AudioProcessor
 {
 public:
@@ -90,8 +94,6 @@ private:
     MonoChain leftChain, rightChain;
     
     void updatePeakFilter(const ChainSettings& chainSettings);
-    using Coefficients = Filter::CoefficientsPtr;
-    static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
     
     template<int Index, typename ChainType, typename CoefficientType>
     void update(ChainType& chain, CoefficientType& coefficient)
