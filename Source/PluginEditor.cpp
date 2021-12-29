@@ -26,11 +26,21 @@ highCutSlopeAttachment(audioProcessor.apvts, "HighCut Slope", highCutSlopeSlider
     {
         addAndMakeVisible(comp);
     }
+    const auto& params = audioProcessor.getParameters();
+    for (auto param : params) {
+        param->addListener(this);
+    }
+    
+    startTimerHz(60);
     setSize (600, 400);
 }
 
 First_EQAudioProcessorEditor::~First_EQAudioProcessorEditor()
 {
+    const auto& params = audioProcessor.getParameters();
+    for (auto param : params) {
+        param->removeListener(this);
+    }
 }
 
 //==============================================================================
@@ -70,16 +80,16 @@ void First_EQAudioProcessorEditor::paint (juce::Graphics& g)
         }
         
         if(! highCut.isBypassed<0>()) {
-            mag *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            mag *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
         if(! highCut.isBypassed<1>()) {
-            mag *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            mag *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
         if(! highCut.isBypassed<2>()) {
-            mag *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            mag *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
         if(! highCut.isBypassed<3>()) {
-            mag *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            mag *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
         
         mags[i] = Decibels::gainToDecibels(mag);
@@ -119,8 +129,9 @@ void First_EQAudioProcessorEditor::resized()
     peakQualitySlider.setBounds(bounds);
 }
 
-void First_EQAudioProcessorEditor::parameterValueChanged(<#int parameterIndex#>, <#float newValue#>)
+void First_EQAudioProcessorEditor::parameterValueChanged(int parameterIndex, float newValue)
 {
+    DBG("parameterValueChanged: " << parameterIndex << " + newValue: " << newValue);
     parametersChanged.set(true);
 }
 
@@ -128,7 +139,15 @@ void First_EQAudioProcessorEditor::timerCallback()
 {
    if (parametersChanged.compareAndSetBool(false, true))
    {
-       
+
+       auto chainSettings = getChainSettings(audioProcessor.apvts);
+       auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
+       updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+       auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
+       auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+       updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+       updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+       repaint();
    }
 }
 
