@@ -289,6 +289,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout First_EQAudioProcessor::crea
     return layout;
 }
 
+void First_EQAudioProcessor::resetAllParam()
+{
+    
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
