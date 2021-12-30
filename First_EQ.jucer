@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="Az5mHC" name="First_EQ" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="Az5mHC" name="Peemoti_EQ" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               cppLanguageStandard="17">
-  <MAINGROUP id="JWIPtc" name="First_EQ">
+  <MAINGROUP id="JWIPtc" name="Peemoti_EQ">
     <GROUP id="{7BA5B2FC-E62A-9D4D-670C-51B4B745A65D}" name="Source">
       <FILE id="sI92Mf" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
